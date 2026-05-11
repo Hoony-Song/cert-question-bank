@@ -1,0 +1,5 @@
+id: CKA
+displayName: Certified Kubernetes Administrator
+status: active
+defaultDurationMinutes: 180
+description: CKA mock exam

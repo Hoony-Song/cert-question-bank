@@ -1,0 +1,14 @@
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+*.qcow2
+*.iso
+session-data/
