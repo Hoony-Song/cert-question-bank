@@ -1,0 +1,43 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q013
+spec:
+  targetCluster: cka-vm
+  namespace: secure-web
+  maxScore: 10
+  checks:
+    - id: configmap-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: ConfigMap
+        name: edge-tls-config
+    - id: configmap-tls-value
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: v1
+        kind: ConfigMap
+        name: edge-tls-config
+      path: $.data.ssl_protocols
+      equals: TLSv1.3
+    - id: configmap-immutable
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: ConfigMap
+        name: edge-tls-config
+      path: $.immutable
+      equals: true
+    - id: deployment-revision-label
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: edge-nginx
+      path: $.spec.template.metadata.labels.config-revision
+      equals: v2

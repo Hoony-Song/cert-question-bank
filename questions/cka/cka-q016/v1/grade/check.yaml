@@ -1,0 +1,63 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q016
+spec:
+  targetCluster: cka-vm
+  namespace: repair-lab
+  maxScore: 10
+  checks:
+    - id: deployment-image
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: metrics-api
+      path: $.spec.template.spec.containers[0].image
+      equals: nginx:1.27
+    - id: deployment-replicas
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: metrics-api
+      path: $.spec.replicas
+      equals: 2
+    - id: pod-label
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: metrics-api
+      path: $.spec.template.metadata.labels.app
+      equals: metrics-api
+    - id: service-selector
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Service
+        name: metrics-api-svc
+      path: $.spec.selector.app
+      equals: metrics-api
+    - id: service-port
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: metrics-api-svc
+      path: $.spec.ports[0].port
+      equals: 9090
+    - id: service-targetport
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: metrics-api-svc
+      path: $.spec.ports[0].targetPort
+      equals: 80

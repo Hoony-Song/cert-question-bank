@@ -1,0 +1,68 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q001
+spec:
+  targetCluster: cka-kind
+  namespace: app-team
+  maxScore: 10
+  checks:
+    - id: nginx-pod-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Pod
+        name: nginx
+    - id: service-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Service
+        name: nginx-svc
+    - id: service-port
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: nginx-svc
+      path: $.spec.ports[0].port
+      equals: 80
+    - id: service-target-port
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: nginx-svc
+      path: $.spec.ports[0].targetPort
+      equals: 80
+    - id: service-selector
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: nginx-svc
+      path: $.spec.selector.app
+      equals: nginx
+    - id: ingress-class
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        name: nginx-ingress
+      path: $.spec.ingressClassName
+      equals: nginx
+    - id: ingress-backend-service
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        name: nginx-ingress
+      path: $.spec.rules[0].http.paths[0].backend.service.name
+      equals: nginx-svc

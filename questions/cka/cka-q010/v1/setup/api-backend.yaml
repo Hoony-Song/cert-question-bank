@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: routing-lab
+  labels:
+    cert-platform.io/question-id: cka-q010
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+  namespace: routing-lab
+  labels:
+    app: catalog-api
+    cert-platform.io/question-id: cka-q010
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-api
+  template:
+    metadata:
+      labels:
+        app: catalog-api
+        cert-platform.io/question-id: cka-q010
+    spec:
+      containers:
+        - name: api
+          image: nginx:1.27
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-api
+  namespace: routing-lab
+  labels:
+    cert-platform.io/question-id: cka-q010
+spec:
+  selector:
+    app: catalog-api
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: legacy-ingress
+  namespace: routing-lab
+  labels:
+    cert-platform.io/question-id: cka-q010
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: old.catalog.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: catalog-api
+                port:
+                  number: 8080

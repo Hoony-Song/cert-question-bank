@@ -1,0 +1,61 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q004
+spec:
+  targetCluster: cka-kind
+  namespace: logging-lab
+  maxScore: 10
+  checks:
+    - id: deployment-exists
+      type: kubernetes-object-exists
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+    - id: sidecar-name
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].name
+      equals: log-tail
+    - id: sidecar-image
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].image
+      equals: busybox:1.36
+    - id: sidecar-mountpath
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].volumeMounts[0].mountPath
+      equals: /var/log/audit
+    - id: shared-volume-name
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.volumes[0].name
+      equals: audit-logs
+    - id: main-container-mountpath
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[0].volumeMounts[0].mountPath
+      equals: /var/log/audit

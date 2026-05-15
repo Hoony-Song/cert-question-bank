@@ -1,0 +1,28 @@
+id: cka-q004
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: "Add a log tailing sidecar to a Deployment"
+status: draft
+category: workloads-and-scheduling
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: logging-lab
+ui:
+  order: 4
+  displayContext: cka-kind
+  displayNamespace: logging-lab
+  estimatedMinutes: 12
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/log-collector-deployment.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

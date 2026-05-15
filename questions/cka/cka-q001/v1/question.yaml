@@ -1,0 +1,28 @@
+id: cka-q001
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: Expose a pre-created nginx Pod
+status: active
+category: workloads-and-scheduling
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: app-team
+ui:
+  order: 1
+  displayContext: cka-kind
+  displayNamespace: app-team
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/nginx-pod.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

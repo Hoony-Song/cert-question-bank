@@ -1,0 +1,28 @@
+id: cka-q005
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Create default StorageClass and PVC"
+status: draft
+category: storage
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: reporting-data
+ui:
+  order: 5
+  displayContext: cka-vm
+  displayNamespace: reporting-data
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/data-store-ns.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: priority-lab
+  labels:
+    cert-platform.io/question-id: cka-q007
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: queue-consumer
+  namespace: priority-lab
+  labels:
+    app: queue-consumer
+    cert-platform.io/question-id: cka-q007
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue-consumer
+  template:
+    metadata:
+      labels:
+        app: queue-consumer
+        cert-platform.io/question-id: cka-q007
+    spec:
+      containers:
+        - name: consumer
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "while true; do sleep 30; done"]

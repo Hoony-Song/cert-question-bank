@@ -1,0 +1,28 @@
+id: cka-q015
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: "Scale Deployment and configure resource requests"
+status: draft
+category: workloads-and-scheduling
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: cms-prod
+ui:
+  order: 15
+  displayContext: cka-kind
+  displayNamespace: cms-prod
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/wordpress.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

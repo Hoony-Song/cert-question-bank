@@ -1,0 +1,52 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q011
+spec:
+  targetCluster: cka-kind
+  namespace: payments-backend
+  maxScore: 10
+  checks:
+    - id: netpol-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-payments-frontend
+    - id: netpol-podselector
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-payments-frontend
+      path: $.spec.podSelector.matchLabels.app
+      equals: ledger-api
+    - id: netpol-nsselector
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-payments-frontend
+      path: $.spec.ingress[0].from[0].namespaceSelector.matchLabels.team
+      equals: payments-frontend
+    - id: netpol-port
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-payments-frontend
+      path: $.spec.ingress[0].ports[0].port
+      equals: 8443
+    - id: netpol-policytype
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        name: allow-payments-frontend
+      path: $.spec.policyTypes[0]
+      equals: Ingress

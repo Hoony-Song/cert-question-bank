@@ -34,9 +34,11 @@ QUESTION_REQUIRED_FIELDS = (
     "id",
     "version",
     "examType",
+    "targetCluster",
     "title",
     "status",
     "category",
+    "points",
     "score",
     "difficulty",
     "environment.template",
@@ -63,6 +65,7 @@ EXAM_SET_REQUIRED_FIELDS = (
 QUESTION_STATUSES = {"draft", "review", "active", "deprecated", "archived"}
 EXAM_SET_STATUSES = {"draft", "review", "active", "deprecated", "archived"}
 ACTIVE_ALLOWED_QUESTION_STATUSES = {"active"}
+TARGET_CLUSTERS = {"cka-vm", "cka-kind"}
 
 
 class ValidationContext:
@@ -211,6 +214,53 @@ def resolve_environment_template(template: str) -> Path | None:
     return None
 
 
+def validate_relative_file(path: Path, value: Any, field: str, ctx: ValidationContext) -> Path | None:
+    if not isinstance(value, str) or not value:
+        ctx.error(path, f"{field}은 비어 있지 않은 문자열이어야 합니다.")
+        return None
+
+    if Path(value).is_absolute() or ".." in Path(value).parts:
+        ctx.error(path, f"{field}은 question version 디렉토리 안의 상대 경로여야 합니다: {value}")
+        return None
+
+    target = (path.parent / value).resolve()
+    try:
+        target.relative_to(path.parent.resolve())
+    except ValueError:
+        ctx.error(path, f"{field}은 question version 디렉토리 밖을 참조할 수 없습니다: {value}")
+        return None
+
+    if not target.is_file():
+        ctx.error(path, f"{field} 대상 파일이 없습니다: {value}")
+        return None
+
+    return target
+
+
+def validate_setup_reference(path: Path, data: dict[str, Any], ctx: ValidationContext) -> None:
+    setup = data.get("setup")
+    if not isinstance(setup, dict):
+        ctx.error(path, "setup은 object 형태여야 합니다.")
+        return
+
+    files = setup.get("files")
+    if not isinstance(files, list) or not files:
+        ctx.error(path, "setup.files는 비어 있지 않은 list여야 합니다.")
+        return
+
+    for index, item in enumerate(files, start=1):
+        validate_relative_file(path, item, f"setup.files[{index}]", ctx)
+
+
+def validate_grading_reference(path: Path, data: dict[str, Any], ctx: ValidationContext) -> None:
+    grading = data.get("grading")
+    if not isinstance(grading, dict):
+        ctx.error(path, "grading은 object 형태여야 합니다.")
+        return
+
+    validate_relative_file(path, grading.get("file"), "grading.file", ctx)
+
+
 def validate_question_file(path: Path, data: dict[str, Any], ctx: ValidationContext) -> None:
     require_fields(path, data, QUESTION_REQUIRED_FIELDS, ctx)
 
@@ -242,9 +292,19 @@ def validate_question_file(path: Path, data: dict[str, Any], ctx: ValidationCont
     if status not in QUESTION_STATUSES:
         ctx.error(path, f"status는 {sorted(QUESTION_STATUSES)} 중 하나여야 합니다.")
 
+    target_cluster = data.get("targetCluster")
+    if target_cluster not in TARGET_CLUSTERS:
+        ctx.error(path, f"targetCluster는 {sorted(TARGET_CLUSTERS)} 중 하나여야 합니다.")
+
+    points = data.get("points")
+    if not isinstance(points, (int, float)) or points <= 0:
+        ctx.error(path, "points는 양수여야 합니다.")
+
     score = data.get("score")
     if not isinstance(score, (int, float)) or score <= 0:
         ctx.error(path, "score는 양수여야 합니다.")
+    elif isinstance(points, (int, float)) and score != points:
+        ctx.error(path, "score와 points는 같은 값이어야 합니다.")
 
     order = get_nested(data, "ui.order")
     if not isinstance(order, int) or order <= 0:
@@ -256,9 +316,9 @@ def validate_question_file(path: Path, data: dict[str, Any], ctx: ValidationCont
 
     problem_file = get_nested(data, "question.file")
     if isinstance(problem_file, str) and problem_file:
-        problem_path = (path.parent / problem_file).resolve()
-        if not problem_path.is_file():
-            ctx.error(path, f"question.file 대상 파일이 없습니다: {problem_file}")
+        problem_path = validate_relative_file(path, problem_file, "question.file", ctx)
+        if problem_path and any(part in {"answer", "grade"} for part in problem_path.relative_to(path.parent).parts):
+            ctx.error(path, "question.file은 answer/ 또는 grade/ 아래 파일을 참조할 수 없습니다.")
     elif problem_file is not None:
         ctx.error(path, "question.file은 비어 있지 않은 문자열이어야 합니다.")
 
@@ -268,6 +328,9 @@ def validate_question_file(path: Path, data: dict[str, Any], ctx: ValidationCont
             ctx.error(path, f"environment.template 대상 파일이 없습니다: {template}")
     elif template is not None:
         ctx.error(path, "environment.template은 비어 있지 않은 문자열이어야 합니다.")
+
+    validate_setup_reference(path, data, ctx)
+    validate_grading_reference(path, data, ctx)
 
 
 def index_questions(ctx: ValidationContext) -> dict[tuple[str, str], dict[str, Any]]:

@@ -1,0 +1,28 @@
+id: cka-q016
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Repair a broken Deployment rollout"
+status: draft
+category: troubleshooting
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: repair-lab
+ui:
+  order: 16
+  displayContext: cka-vm
+  displayNamespace: repair-lab
+  estimatedMinutes: 12
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/placeholder.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

@@ -1,0 +1,45 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q014
+spec:
+  targetCluster: cka-vm
+  namespace: node-networking
+  maxScore: 10
+  checks:
+    - id: node-label
+      type: jsonpath-equals
+      points: 4
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.metadata.labels.networking\.cert-platform\.io/plugin
+      equals: calico
+    - id: node-taint-key
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].key
+      equals: networking.cert-platform.io/validation
+    - id: node-taint-value
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].value
+      equals: required
+    - id: node-taint-effect
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].effect
+      equals: NoSchedule

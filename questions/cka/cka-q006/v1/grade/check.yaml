@@ -1,0 +1,61 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q006
+spec:
+  targetCluster: cka-kind
+  namespace: service-lab
+  maxScore: 10
+  checks:
+    - id: deployment-port
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: inventory-api
+      path: $.spec.template.spec.containers[0].ports[0].containerPort
+      equals: 8080
+    - id: service-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Service
+        name: inventory-api-nodeport
+    - id: service-type
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Service
+        name: inventory-api-nodeport
+      path: $.spec.type
+      equals: NodePort
+    - id: service-port
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: inventory-api-nodeport
+      path: $.spec.ports[0].port
+      equals: 8080
+    - id: service-targetport
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Service
+        name: inventory-api-nodeport
+      path: $.spec.ports[0].targetPort
+      equals: 8080
+    - id: service-selector
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Service
+        name: inventory-api-nodeport
+      path: $.spec.selector.app
+      equals: inventory-api

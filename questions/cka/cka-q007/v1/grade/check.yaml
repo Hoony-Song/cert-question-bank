@@ -1,0 +1,52 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q007
+spec:
+  targetCluster: cka-vm
+  namespace: priority-lab
+  maxScore: 10
+  checks:
+    - id: pc-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: scheduling.k8s.io/v1
+        kind: PriorityClass
+        name: platform-critical
+    - id: pc-value
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: scheduling.k8s.io/v1
+        kind: PriorityClass
+        name: platform-critical
+      path: $.value
+      equals: 900000
+    - id: pc-global-default
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: scheduling.k8s.io/v1
+        kind: PriorityClass
+        name: platform-critical
+      path: $.globalDefault
+      equals: false
+    - id: pc-description
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: scheduling.k8s.io/v1
+        kind: PriorityClass
+        name: platform-critical
+      path: $.description
+      equals: platform critical workload
+    - id: deployment-priority
+      type: jsonpath-equals
+      points: 4
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: queue-consumer
+      path: $.spec.template.spec.priorityClassName
+      equals: platform-critical

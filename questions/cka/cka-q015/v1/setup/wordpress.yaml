@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cms-prod
+  labels:
+    cert-platform.io/question-id: cka-q015
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+  namespace: cms-prod
+  labels:
+    app: blog
+    cert-platform.io/question-id: cka-q015
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+        cert-platform.io/question-id: cka-q015
+    spec:
+      containers:
+        - name: wordpress
+          image: wordpress:6.4
+          ports:
+            - containerPort: 80

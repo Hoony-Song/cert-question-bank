@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments-frontend
+  labels:
+    team: payments-frontend
+    cert-platform.io/question-id: cka-q011
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payments-backend
+  labels:
+    team: payments-backend
+    cert-platform.io/question-id: cka-q011
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout-ui
+  namespace: payments-frontend
+  labels:
+    app: checkout-ui
+    cert-platform.io/question-id: cka-q011
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkout-ui
+  template:
+    metadata:
+      labels:
+        app: checkout-ui
+        cert-platform.io/question-id: cka-q011
+    spec:
+      containers:
+        - name: ui
+          image: nginx:1.27
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ledger-api
+  namespace: payments-backend
+  labels:
+    app: ledger-api
+    cert-platform.io/question-id: cka-q011
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ledger-api
+  template:
+    metadata:
+      labels:
+        app: ledger-api
+        cert-platform.io/question-id: cka-q011
+    spec:
+      containers:
+        - name: api
+          image: nginx:1.27
+          ports:
+            - containerPort: 8443

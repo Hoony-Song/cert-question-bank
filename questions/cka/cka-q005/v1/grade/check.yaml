@@ -1,0 +1,59 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q005
+spec:
+  targetCluster: cka-vm
+  namespace: reporting-data
+  maxScore: 10
+  checks:
+    - id: sc-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: storage.k8s.io/v1
+        kind: StorageClass
+        name: fast-local
+    - id: sc-provisioner
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: storage.k8s.io/v1
+        kind: StorageClass
+        name: fast-local
+      path: $.provisioner
+      equals: rancher.io/local-path
+    - id: sc-default
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: storage.k8s.io/v1
+        kind: StorageClass
+        name: fast-local
+      path: $.metadata.annotations.storageclass\.kubernetes\.io/is-default-class
+      equals: true
+    - id: sc-binding-mode
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: storage.k8s.io/v1
+        kind: StorageClass
+        name: fast-local
+      path: $.volumeBindingMode
+      equals: WaitForFirstConsumer
+    - id: pvc-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: reports-pvc
+    - id: pvc-storageclass
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: reports-pvc
+      path: $.spec.storageClassName
+      equals: fast-local

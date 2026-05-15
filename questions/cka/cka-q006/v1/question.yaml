@@ -1,0 +1,28 @@
+id: cka-q006
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: "Expose a Deployment with NodePort Service"
+status: draft
+category: services-and-networking
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: service-lab
+ui:
+  order: 6
+  displayContext: cka-kind
+  displayNamespace: service-lab
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/backend-api.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

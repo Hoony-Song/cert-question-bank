@@ -1,0 +1,54 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q017
+spec:
+  targetCluster: cka-vm
+  namespace: runtime-node
+  maxScore: 10
+  checks:
+    - id: node-ready-label
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.metadata.labels.runtime\.cert-platform\.io/ready
+      equals: true
+    - id: node-handler-label
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.metadata.labels.runtime\.cert-platform\.io/handler
+      equals: containerd
+    - id: node-taint-key
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].key
+      equals: runtime.cert-platform.io/bootstrap
+    - id: node-taint-value
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].value
+      equals: complete
+    - id: node-taint-effect
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: Node
+        name: worker
+      path: $.spec.taints[0].effect
+      equals: NoExecute

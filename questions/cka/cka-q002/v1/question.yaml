@@ -1,0 +1,28 @@
+id: cka-q002
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: "Create HPA with CPU target and stabilization window"
+status: draft
+category: workloads-and-scheduling
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: autoscale-lab
+ui:
+  order: 2
+  displayContext: cka-kind
+  displayNamespace: autoscale-lab
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/frontend-deployment.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

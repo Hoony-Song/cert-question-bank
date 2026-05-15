@@ -1,0 +1,28 @@
+id: cka-q007
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Create PriorityClass and assign it to a Deployment"
+status: draft
+category: workloads-and-scheduling
+difficulty: easy
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: priority-lab
+ui:
+  order: 7
+  displayContext: cka-vm
+  displayNamespace: priority-lab
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/event-processor.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

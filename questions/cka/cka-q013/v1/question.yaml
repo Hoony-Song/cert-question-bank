@@ -1,0 +1,28 @@
+id: cka-q013
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Replace immutable ConfigMap and restart Deployment"
+status: draft
+category: workloads-and-scheduling
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: secure-web
+ui:
+  order: 13
+  displayContext: cka-vm
+  displayNamespace: secure-web
+  estimatedMinutes: 12
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/nginx-app.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

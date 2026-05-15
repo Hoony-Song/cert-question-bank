@@ -1,0 +1,9 @@
+id: cka-mock-001
+examType: CKA
+title: CKA Mock 001
+status: active
+durationMinutes: 180
+questions:
+  - id: cka-q001
+    version: v1
+    points: 10

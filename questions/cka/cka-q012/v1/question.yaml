@@ -1,0 +1,28 @@
+id: cka-q012
+version: v1
+examType: CKA
+targetCluster: cka-kind
+title: "Create TLS Secret and configure Ingress TLS"
+status: draft
+category: services-and-networking
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-kind
+  namespace: tls-demo
+ui:
+  order: 12
+  displayContext: cka-kind
+  displayNamespace: tls-demo
+  estimatedMinutes: 12
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/cert-demo-ns.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

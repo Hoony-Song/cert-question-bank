@@ -1,0 +1,28 @@
+id: cka-q014
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Mark a node for network plugin validation"
+status: draft
+category: cluster-architecture
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: node-networking
+ui:
+  order: 14
+  displayContext: cka-vm
+  displayNamespace: node-networking
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/placeholder.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

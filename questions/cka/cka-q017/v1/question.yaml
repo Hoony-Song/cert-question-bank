@@ -1,0 +1,28 @@
+id: cka-q017
+version: v1
+examType: CKA
+targetCluster: cka-vm
+title: "Prepare a worker node for runtime scheduling"
+status: draft
+category: cluster-architecture
+difficulty: medium
+points: 10
+score: 10
+environment:
+  template: cka/cka-3vm.yaml
+  context: cka-vm
+  namespace: runtime-node
+ui:
+  order: 17
+  displayContext: cka-vm
+  displayNamespace: runtime-node
+  estimatedMinutes: 10
+question:
+  file: problem.md
+setup:
+  type: kubernetes-manifest
+  files:
+    - setup/placeholder.yaml
+grading:
+  type: declarative
+  file: grade/check.yaml

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: edge-web
+  labels:
+    cert-platform.io/question-id: cka-q003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-api
+  namespace: edge-web
+  labels:
+    app: orders-api
+    cert-platform.io/question-id: cka-q003
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-api
+  template:
+    metadata:
+      labels:
+        app: orders-api
+        cert-platform.io/question-id: cka-q003
+    spec:
+      containers:
+        - name: api
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-svc
+  namespace: edge-web
+  labels:
+    cert-platform.io/question-id: cka-q003
+spec:
+  selector:
+    app: orders-api
+  ports:
+    - port: 8080
+      targetPort: 80

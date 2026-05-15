@@ -1,0 +1,17 @@
+id: cka-3vm
+examType: CKA
+description: CKA 3VM runtime with kubeadm and kind contexts
+nodes:
+  - name: cka0001
+    role: kubeadm-control-plane
+    context: cka-vm
+    initialTerminal: true
+  - name: cka0002
+    role: kind-host
+    context: cka-kind
+  - name: cka0003
+    role: kubeadm-worker
+    context: cka-vm
+contexts:
+  - cka-vm
+  - cka-kind

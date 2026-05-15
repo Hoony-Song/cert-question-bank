@@ -1,0 +1,61 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q002
+spec:
+  targetCluster: cka-kind
+  namespace: autoscale-lab
+  maxScore: 10
+  checks:
+    - id: hpa-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+    - id: hpa-target-name
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+      path: $.spec.scaleTargetRef.name
+      equals: web-frontend
+    - id: hpa-cpu-target
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+      path: $.spec.metrics[0].resource.target.averageUtilization
+      equals: 55
+    - id: hpa-min-replicas
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+      path: $.spec.minReplicas
+      equals: 2
+    - id: hpa-max-replicas
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+      path: $.spec.maxReplicas
+      equals: 5
+    - id: hpa-scaledown-window
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        name: web-frontend-hpa
+      path: $.spec.behavior.scaleDown.stabilizationWindowSeconds
+      equals: 45

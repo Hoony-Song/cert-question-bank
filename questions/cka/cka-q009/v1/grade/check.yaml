@@ -1,0 +1,77 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q009
+spec:
+  targetCluster: cka-vm
+  namespace: db-restore
+  maxScore: 10
+  checks:
+    - id: pvc-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: orders-db-data
+    - id: pvc-accessmode
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: orders-db-data
+      path: $.spec.accessModes[0]
+      equals: ReadWriteOnce
+    - id: pvc-storageclass
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: orders-db-data
+      path: $.spec.storageClassName
+      equals: local-path
+    - id: deployment-exists
+      type: kubernetes-object-exists
+      points: 2
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: orders-db
+    - id: deployment-image
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: orders-db
+      path: $.spec.template.spec.containers[0].image
+      equals: mysql:8.0
+    - id: deployment-env
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: orders-db
+      path: $.spec.template.spec.containers[0].env[0].value
+      equals: change-me
+    - id: deployment-volume
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: orders-db
+      path: $.spec.template.spec.volumes[0].persistentVolumeClaim.claimName
+      equals: orders-db-data
+    - id: deployment-mount
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: orders-db
+      path: $.spec.template.spec.containers[0].volumeMounts[0].mountPath
+      equals: /var/lib/mysql

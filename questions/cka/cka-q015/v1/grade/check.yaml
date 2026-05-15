@@ -1,0 +1,36 @@
+apiVersion: cert-platform.io/v1alpha1
+kind: GradingCheck
+metadata:
+  questionId: cka-q015
+spec:
+  targetCluster: cka-kind
+  namespace: cms-prod
+  maxScore: 10
+  checks:
+    - id: deployment-replicas
+      type: jsonpath-equals
+      points: 4
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: blog
+      path: $.spec.replicas
+      equals: 3
+    - id: deployment-cpu-request
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: blog
+      path: $.spec.template.spec.containers[0].resources.requests.cpu
+      equals: 150m
+    - id: deployment-memory-request
+      type: jsonpath-equals
+      points: 3
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: blog
+      path: $.spec.template.spec.containers[0].resources.requests.memory
+      equals: 256Mi
