@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: nginx:1.27
+          image: registry.k8s.io/pause:3.9
           ports:
             - containerPort: 8080
 ---
@@ -64,3 +64,18 @@ spec:
                 name: catalog-api
                 port:
                   number: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: routing-gateway
+  namespace: routing-lab
+  labels:
+    cert-platform.io/question-id: cka-q010
+spec:
+  gatewayClassName: nginx
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: catalog.apps.local

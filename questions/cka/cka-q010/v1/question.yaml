@@ -1,20 +1,20 @@
 id: cka-q010
 version: v1
 examType: CKA
-targetCluster: cka-kind
+targetCluster: cka-vm
 title: "Replace an old Ingress with a new route"
-status: draft
+status: active
 category: services-and-networking
 difficulty: medium
 points: 10
 score: 10
 environment:
   template: cka/cka-3vm.yaml
-  context: cka-kind
+  context: cka-vm
   namespace: routing-lab
 ui:
   order: 10
-  displayContext: cka-kind
+  displayContext: cka-vm
   displayNamespace: routing-lab
   estimatedMinutes: 12
 question:

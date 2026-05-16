@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-kind
 title: "Create NetworkPolicy between namespaces"
-status: draft
+status: active
 category: services-and-networking
 difficulty: medium
 points: 10

@@ -4,6 +4,51 @@ title: CKA Mock 001
 status: active
 durationMinutes: 180
 questions:
-  - id: cka-q001
+  - id: cka-q002
+    version: v1
+    points: 10
+  - id: cka-q003
+    version: v1
+    points: 10
+  - id: cka-q004
+    version: v1
+    points: 10
+  - id: cka-q005
+    version: v1
+    points: 10
+  - id: cka-q006
+    version: v1
+    points: 10
+  - id: cka-q007
+    version: v1
+    points: 10
+  - id: cka-q008
+    version: v1
+    points: 10
+  - id: cka-q009
+    version: v1
+    points: 10
+  - id: cka-q010
+    version: v1
+    points: 10
+  - id: cka-q011
+    version: v1
+    points: 10
+  - id: cka-q012
+    version: v1
+    points: 10
+  - id: cka-q013
+    version: v1
+    points: 10
+  - id: cka-q014
+    version: v1
+    points: 10
+  - id: cka-q015
+    version: v1
+    points: 10
+  - id: cka-q016
+    version: v1
+    points: 10
+  - id: cka-q017
     version: v1
     points: 10

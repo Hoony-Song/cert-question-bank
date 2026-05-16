@@ -2,8 +2,8 @@ id: cka-q009
 version: v1
 examType: CKA
 targetCluster: cka-vm
-title: "Recover a database Deployment with PVC"
-status: draft
+title: "Recover an nginx Deployment with PVC"
+status: active
 category: storage
 difficulty: medium
 points: 10
@@ -11,18 +11,18 @@ score: 10
 environment:
   template: cka/cka-3vm.yaml
   context: cka-vm
-  namespace: db-restore
+  namespace: web-restore
 ui:
   order: 9
   displayContext: cka-vm
-  displayNamespace: db-restore
+  displayNamespace: web-restore
   estimatedMinutes: 12
 question:
   file: problem.md
 setup:
   type: kubernetes-manifest
   files:
-    - setup/database-ns.yaml
+    - setup/web-restore-ns.yaml
 grading:
   type: declarative
   file: grade/check.yaml

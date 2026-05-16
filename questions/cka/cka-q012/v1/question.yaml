@@ -2,8 +2,8 @@ id: cka-q012
 version: v1
 examType: CKA
 targetCluster: cka-kind
-title: "Create TLS Secret and configure Ingress TLS"
-status: draft
+title: "List backup CRDs"
+status: active
 category: services-and-networking
 difficulty: medium
 points: 10
@@ -11,18 +11,18 @@ score: 10
 environment:
   template: cka/cka-3vm.yaml
   context: cka-kind
-  namespace: tls-demo
+  namespace: backup-inventory
 ui:
   order: 12
   displayContext: cka-kind
-  displayNamespace: tls-demo
+  displayNamespace: backup-inventory
   estimatedMinutes: 12
 question:
   file: problem.md
 setup:
   type: kubernetes-manifest
   files:
-    - setup/cert-demo-ns.yaml
+    - setup/backup-crds.yaml
 grading:
   type: declarative
   file: grade/check.yaml

@@ -26,7 +26,4 @@ spec:
     spec:
       containers:
         - name: worker
-          image: busybox:1.36
-          command: ["/bin/sh", "-c"]
-          args:
-            - "mkdir -p /var/log/audit && while true; do echo audit-event >> /var/log/audit/audit.log; sleep 5; done"
+          image: registry.k8s.io/pause:3.7

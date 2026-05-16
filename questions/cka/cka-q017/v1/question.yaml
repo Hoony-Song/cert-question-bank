@@ -2,8 +2,8 @@ id: cka-q017
 version: v1
 examType: CKA
 targetCluster: cka-vm
-title: "Prepare a worker node for runtime scheduling"
-status: draft
+title: "Switch kubelet to Docker runtime"
+status: active
 category: cluster-architecture
 difficulty: medium
 points: 10

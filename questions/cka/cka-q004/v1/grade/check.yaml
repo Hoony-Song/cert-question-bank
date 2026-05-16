@@ -16,7 +16,7 @@ spec:
         name: audit-worker
     - id: sidecar-name
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
         apiVersion: apps/v1
         kind: Deployment
@@ -25,16 +25,43 @@ spec:
       equals: log-tail
     - id: sidecar-image
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
         apiVersion: apps/v1
         kind: Deployment
         name: audit-worker
       path: $.spec.template.spec.containers[1].image
       equals: busybox:1.36
+    - id: sidecar-command-shell
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].command[0]
+      equals: /bin/sh
+    - id: sidecar-command-flag
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].command[1]
+      equals: -c
+    - id: sidecar-command-tail
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.containers[1].command[2]
+      equals: tail -n+1 -f /var/log/audit/audit.log
     - id: sidecar-mountpath
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
         apiVersion: apps/v1
         kind: Deployment
@@ -50,9 +77,18 @@ spec:
         name: audit-worker
       path: $.spec.template.spec.volumes[0].name
       equals: audit-logs
+    - id: shared-volume-emptydir
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: audit-worker
+      path: $.spec.template.spec.volumes[0].emptyDir
+      equals: {}
     - id: main-container-mountpath
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
         apiVersion: apps/v1
         kind: Deployment

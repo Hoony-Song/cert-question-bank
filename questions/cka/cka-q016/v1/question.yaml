@@ -2,8 +2,8 @@ id: cka-q016
 version: v1
 examType: CKA
 targetCluster: cka-vm
-title: "Repair a broken Deployment rollout"
-status: draft
+title: "Fix control-plane resource and API flags"
+status: active
 category: troubleshooting
 difficulty: medium
 points: 10
@@ -11,11 +11,11 @@ score: 10
 environment:
   template: cka/cka-3vm.yaml
   context: cka-vm
-  namespace: repair-lab
+  namespace: kube-system
 ui:
   order: 16
   displayContext: cka-vm
-  displayNamespace: repair-lab
+  displayNamespace: kube-system
   estimatedMinutes: 12
 question:
   file: problem.md

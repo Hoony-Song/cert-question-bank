@@ -1,6 +1,6 @@
 # Task
 
-`ssh cka0001`로 접속한 뒤 `cka-kind` 컨텍스트를 사용하세요.
+현재 노드가 `cka0002`임을 확인하세요. 아니면 `ssh cka0002`로 이동하세요.
 
 `payments-frontend` 네임스페이스의 Pod만 `payments-backend` 네임스페이스의 `ledger-api` Pod에 접근할 수 있어야 합니다.
 

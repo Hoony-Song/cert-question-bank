@@ -4,7 +4,7 @@ metadata:
   questionId: cka-q008
 spec:
   targetCluster: cka-kind
-  namespace: gitops-system
+  namespace: metrics-server
   maxScore: 10
   checks:
     - id: deployment-exists
@@ -13,65 +13,38 @@ spec:
       object:
         apiVersion: apps/v1
         kind: Deployment
-        name: gitops-controller
+        name: metrics-server
     - id: deployment-replicas
       type: jsonpath-equals
       points: 1
       object:
         apiVersion: apps/v1
         kind: Deployment
-        name: gitops-controller
+        name: metrics-server
       path: $.spec.replicas
       equals: 2
-    - id: deployment-image
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: gitops-controller
-      path: $.spec.template.spec.containers[0].image
-      equals: nginx:1.27
-    - id: deployment-port
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: gitops-controller
-      path: $.spec.template.spec.containers[0].ports[0].containerPort
-      equals: 8080
     - id: service-exists
       type: kubernetes-object-exists
       points: 2
       object:
         apiVersion: v1
         kind: Service
-        name: gitops-controller-svc
+        name: metrics-server
     - id: service-port
       type: jsonpath-equals
-      points: 1
+      points: 3
       object:
         apiVersion: v1
         kind: Service
-        name: gitops-controller-svc
+        name: metrics-server
       path: $.spec.ports[0].port
       equals: 80
-    - id: service-targetport
+    - id: managed-by-helm
       type: jsonpath-equals
-      points: 1
+      points: 2
       object:
-        apiVersion: v1
-        kind: Service
-        name: gitops-controller-svc
-      path: $.spec.ports[0].targetPort
-      equals: 8080
-    - id: service-selector
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Service
-        name: gitops-controller-svc
-      path: $.spec.selector.app
-      equals: gitops-controller
+        apiVersion: apps/v1
+        kind: Deployment
+        name: metrics-server
+      path: $.metadata.labels.app\.kubernetes\.io/managed-by
+      equals: Helm

@@ -4,60 +4,70 @@ metadata:
   questionId: cka-q016
 spec:
   targetCluster: cka-vm
-  namespace: repair-lab
+  namespace: kube-system
   maxScore: 10
   checks:
-    - id: deployment-image
-      type: jsonpath-equals
+    - id: scheduler-cpu-request
+      type: remote-command
+      points: 4
+      node: cka0001
+      command: |
+        set -euo pipefail
+        scheduler_pod=$(kubectl --context cka-vm -n kube-system get pods -l component=kube-scheduler -o jsonpath='{.items[0].metadata.name}')
+        if [[ -z "$scheduler_pod" ]]; then
+          exit 1
+        fi
+
+        scheduler_cpu=$(kubectl --context cka-vm -n kube-system get pod "$scheduler_pod" -o jsonpath='{.spec.containers[0].resources.requests.cpu}')
+        if [[ "$scheduler_cpu" == "200m" || "$scheduler_cpu" == "0.2" ]]; then
+          exit 0
+        fi
+        exit 1
+    - id: apiserver-flag-profiling
+      type: remote-command
       points: 2
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: metrics-api
-      path: $.spec.template.spec.containers[0].image
-      equals: nginx:1.27
-    - id: deployment-replicas
-      type: jsonpath-equals
+      node: cka0001
+      command: |
+        set -euo pipefail
+        apiserver_pod=$(kubectl --context cka-vm -n kube-system get pods -l component=kube-apiserver -o jsonpath='{.items[0].metadata.name}')
+        if [[ -z "$apiserver_pod" ]]; then
+          exit 1
+        fi
+
+        args=$(kubectl --context cka-vm -n kube-system get pod "$apiserver_pod" -o jsonpath='{.spec.containers[0].command}{" "}{range .spec.containers[0].args[*]}{.}{" "}{end}')
+        if printf '%s\n' "$args" | grep -q -- '--profiling=false'; then
+          exit 0
+        fi
+        exit 1
+    - id: apiserver-flag-verbosity
+      type: remote-command
       points: 2
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: metrics-api
-      path: $.spec.replicas
-      equals: 2
-    - id: pod-label
-      type: jsonpath-equals
+      node: cka0001
+      command: |
+        set -euo pipefail
+        apiserver_pod=$(kubectl --context cka-vm -n kube-system get pods -l component=kube-apiserver -o jsonpath='{.items[0].metadata.name}')
+        if [[ -z "$apiserver_pod" ]]; then
+          exit 1
+        fi
+
+        args=$(kubectl --context cka-vm -n kube-system get pod "$apiserver_pod" -o jsonpath='{.spec.containers[0].command}{" "}{range .spec.containers[0].args[*]}{.}{" "}{end}')
+        if printf '%s\n' "$args" | grep -q -- '--v=4'; then
+          exit 0
+        fi
+        exit 1
+    - id: apiserver-flag-timeout
+      type: remote-command
       points: 2
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: metrics-api
-      path: $.spec.template.metadata.labels.app
-      equals: metrics-api
-    - id: service-selector
-      type: jsonpath-equals
-      points: 2
-      object:
-        apiVersion: v1
-        kind: Service
-        name: metrics-api-svc
-      path: $.spec.selector.app
-      equals: metrics-api
-    - id: service-port
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Service
-        name: metrics-api-svc
-      path: $.spec.ports[0].port
-      equals: 9090
-    - id: service-targetport
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Service
-        name: metrics-api-svc
-      path: $.spec.ports[0].targetPort
-      equals: 80
+      node: cka0001
+      command: |
+        set -euo pipefail
+        apiserver_pod=$(kubectl --context cka-vm -n kube-system get pods -l component=kube-apiserver -o jsonpath='{.items[0].metadata.name}')
+        if [[ -z "$apiserver_pod" ]]; then
+          exit 1
+        fi
+
+        args=$(kubectl --context cka-vm -n kube-system get pod "$apiserver_pod" -o jsonpath='{.spec.containers[0].command}{" "}{range .spec.containers[0].args[*]}{.}{" "}{end}')
+        if printf '%s\n' "$args" | grep -q -- '--request-timeout=300s'; then
+          exit 0
+        fi
+        exit 1

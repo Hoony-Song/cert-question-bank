@@ -7,48 +7,58 @@ spec:
   namespace: runtime-node
   maxScore: 10
   checks:
-    - id: node-ready-label
-      type: jsonpath-equals
-      points: 3
-      object:
-        apiVersion: v1
-        kind: Node
-        name: worker
-      path: $.metadata.labels.runtime\.cert-platform\.io/ready
-      equals: true
-    - id: node-handler-label
-      type: jsonpath-equals
-      points: 3
-      object:
-        apiVersion: v1
-        kind: Node
-        name: worker
-      path: $.metadata.labels.runtime\.cert-platform\.io/handler
-      equals: containerd
-    - id: node-taint-key
-      type: jsonpath-equals
+    - id: cri-dockerd-installed
+      type: remote-command
       points: 2
-      object:
-        apiVersion: v1
-        kind: Node
-        name: worker
-      path: $.spec.taints[0].key
-      equals: runtime.cert-platform.io/bootstrap
-    - id: node-taint-value
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Node
-        name: worker
-      path: $.spec.taints[0].value
-      equals: complete
-    - id: node-taint-effect
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Node
-        name: worker
-      path: $.spec.taints[0].effect
-      equals: NoExecute
+      node: cka0003
+      command: |
+        set -euo pipefail
+        if dpkg-query -W -f='${Status}' cri-dockerd 2>/dev/null | grep -q 'install ok installed'; then
+          :
+        elif command -v cri-dockerd >/dev/null 2>&1; then
+          :
+        else
+          exit 1
+        fi
+
+        systemctl is-active --quiet cri-docker.service \
+          || systemctl is-active --quiet cri-dockerd.service \
+          || test -S /var/run/cri-dockerd.sock
+    - id: worker-sysctl-runtime
+      type: remote-command
+      points: 3
+      node: cka0003
+      command: |
+        set -euo pipefail
+        test "$(sysctl -n net.bridge.bridge-nf-call-iptables)" = "1"
+        test "$(sysctl -n net.ipv6.conf.all.forwarding)" = "1"
+        test "$(sysctl -n net.ipv4.ip_forward)" = "1"
+        test "$(sysctl -n net.netfilter.nf_conntrack_max)" = "131072"
+    - id: kubelet-docker-runtime
+      type: remote-command
+      points: 5
+      node: cka0003
+      command: |
+        set -euo pipefail
+        systemctl is-active --quiet kubelet
+
+        if [[ -f /var/lib/kubelet/kubeadm-flags.env ]]; then
+          args="$(cat /var/lib/kubelet/kubeadm-flags.env)"
+          if grep -Eq -- '--container-runtime-endpoint=.*(cri-dockerd|docker).*\.sock' <<<"$args"; then
+            exit 0
+          fi
+        fi
+
+        if [[ -f /var/lib/kubelet/config.yaml ]] && grep -q 'containerRuntimeEndpoint:' /var/lib/kubelet/config.yaml; then
+          if grep -Eq 'containerRuntimeEndpoint: .*(cri-dockerd|docker).*\.sock' /var/lib/kubelet/config.yaml; then
+            exit 0
+          fi
+        fi
+
+        if [[ -f /etc/systemd/system/kubelet.service.d/10-kubeadm.conf ]]; then
+          if grep -Eq -- '--container-runtime-endpoint=.*(cri-dockerd|docker).*\.sock' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf; then
+            exit 0
+          fi
+        fi
+
+        exit 1

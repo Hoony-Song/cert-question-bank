@@ -2,8 +2,8 @@ id: cka-q014
 version: v1
 examType: CKA
 targetCluster: cka-vm
-title: "Mark a node for network plugin validation"
-status: draft
+title: "Install Calico operator for NetworkPolicy support"
+status: active
 category: cluster-architecture
 difficulty: medium
 points: 10
@@ -11,11 +11,11 @@ score: 10
 environment:
   template: cka/cka-3vm.yaml
   context: cka-vm
-  namespace: node-networking
+  namespace: tigera-operator
 ui:
   order: 14
   displayContext: cka-vm
-  displayNamespace: node-networking
+  displayNamespace: tigera-operator
   estimatedMinutes: 10
 question:
   file: problem.md

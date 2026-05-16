@@ -4,74 +4,35 @@ metadata:
   questionId: cka-q009
 spec:
   targetCluster: cka-vm
-  namespace: db-restore
+  namespace: web-restore
   maxScore: 10
   checks:
-    - id: pvc-exists
-      type: kubernetes-object-exists
-      points: 2
-      object:
-        apiVersion: v1
-        kind: PersistentVolumeClaim
-        name: orders-db-data
-    - id: pvc-accessmode
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: PersistentVolumeClaim
-        name: orders-db-data
-      path: $.spec.accessModes[0]
-      equals: ReadWriteOnce
-    - id: pvc-storageclass
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: PersistentVolumeClaim
-        name: orders-db-data
-      path: $.spec.storageClassName
-      equals: local-path
-    - id: deployment-exists
-      type: kubernetes-object-exists
-      points: 2
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: orders-db
-    - id: deployment-image
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: orders-db
-      path: $.spec.template.spec.containers[0].image
-      equals: mysql:8.0
-    - id: deployment-env
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: orders-db
-      path: $.spec.template.spec.containers[0].env[0].value
-      equals: change-me
-    - id: deployment-volume
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: orders-db
-      path: $.spec.template.spec.volumes[0].persistentVolumeClaim.claimName
-      equals: orders-db-data
-    - id: deployment-mount
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: orders-db
-      path: $.spec.template.spec.containers[0].volumeMounts[0].mountPath
-      equals: /var/lib/mysql
+    - id: pvc-bound-existing-pv
+      type: remote-command
+      points: 5
+      node: cka0001
+      command: |
+        set -euo pipefail
+
+        kubectl --context cka-vm get pv web-restore-content-pv >/dev/null
+        kubectl --context cka-vm -n web-restore get pvc nginx-content >/dev/null
+
+        test "$(kubectl --context cka-vm -n web-restore get pvc nginx-content -o jsonpath='{.spec.accessModes[0]}')" = "ReadWriteOnce"
+        test "$(kubectl --context cka-vm -n web-restore get pvc nginx-content -o jsonpath='{.spec.storageClassName}')" = "local-path"
+        test "$(kubectl --context cka-vm -n web-restore get pvc nginx-content -o jsonpath='{.spec.resources.requests.storage}')" = "1Gi"
+        test "$(kubectl --context cka-vm -n web-restore get pvc nginx-content -o jsonpath='{.status.phase}')" = "Bound"
+        test "$(kubectl --context cka-vm -n web-restore get pvc nginx-content -o jsonpath='{.spec.volumeName}')" = "web-restore-content-pv"
+        test "$(kubectl --context cka-vm get pv web-restore-content-pv -o jsonpath='{.spec.claimRef.namespace}')" = "web-restore"
+        test "$(kubectl --context cka-vm get pv web-restore-content-pv -o jsonpath='{.spec.claimRef.name}')" = "nginx-content"
+    - id: deployment-uses-pvc
+      type: remote-command
+      points: 5
+      node: cka0001
+      command: |
+        set -euo pipefail
+
+        kubectl --context cka-vm -n web-restore get deployment web-nginx >/dev/null
+        test "$(kubectl --context cka-vm -n web-restore get deployment web-nginx -o jsonpath='{.spec.template.spec.containers[0].image}')" = "nginx:1.27"
+        test "$(kubectl --context cka-vm -n web-restore get deployment web-nginx -o jsonpath='{.spec.template.spec.containers[0].ports[0].containerPort}')" = "80"
+        test "$(kubectl --context cka-vm -n web-restore get deployment web-nginx -o jsonpath='{.spec.template.spec.volumes[0].persistentVolumeClaim.claimName}')" = "nginx-content"
+        test "$(kubectl --context cka-vm -n web-restore get deployment web-nginx -o jsonpath='{.spec.template.spec.containers[0].volumeMounts[0].mountPath}')" = "/usr/share/nginx/html"

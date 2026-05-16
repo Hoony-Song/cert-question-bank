@@ -1,6 +1,6 @@
 # Task
 
-Use the `cka-kind` context.
+Confirm you are on `cka0001`. If not, connect with `ssh cka0001`.
 
 An nginx Pod is already running in the `app-team` namespace.
 

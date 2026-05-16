@@ -13,4 +13,4 @@ metadata:
   labels:
     cert-platform.io/question-id: cka-q017
 data:
-  scenario: "worker node must be marked ready for runtime scheduling validation."
+  scenario: "worker node must switch kubelet container runtime to Docker using prepared files under /home/ubuntu/docker."

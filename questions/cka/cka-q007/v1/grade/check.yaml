@@ -24,14 +24,13 @@ spec:
       path: $.value
       equals: 900000
     - id: pc-global-default
-      type: jsonpath-equals
+      type: remote-command
       points: 1
-      object:
-        apiVersion: scheduling.k8s.io/v1
-        kind: PriorityClass
-        name: platform-critical
-      path: $.globalDefault
-      equals: false
+      node: cka0001
+      command: |
+        set -euo pipefail
+        value=$(kubectl --context cka-vm get priorityclass platform-critical -o jsonpath='{.globalDefault}')
+        test -z "$value" || test "$value" = "false"
     - id: pc-description
       type: jsonpath-equals
       points: 1

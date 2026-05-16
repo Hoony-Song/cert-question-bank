@@ -16,21 +16,50 @@ spec:
         name: blog
       path: $.spec.replicas
       equals: 3
-    - id: deployment-cpu-request
-      type: jsonpath-equals
-      points: 3
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: blog
-      path: $.spec.template.spec.containers[0].resources.requests.cpu
-      equals: 150m
-    - id: deployment-memory-request
-      type: jsonpath-equals
-      points: 3
-      object:
-        apiVersion: apps/v1
-        kind: Deployment
-        name: blog
-      path: $.spec.template.spec.containers[0].resources.requests.memory
-      equals: 256Mi
+    - id: deployment-total-request
+      type: remote-command
+      points: 6
+      node: cka0002
+      command: |
+        set -euo pipefail
+        total_replicas=$(kubectl --context cka-kind -n cms-prod get deployment blog -o jsonpath='{.spec.replicas}')
+        per_pod_cpu=$(kubectl --context cka-kind -n cms-prod get deployment blog -o jsonpath='{.spec.template.spec.containers[0].resources.requests.cpu}')
+        per_pod_mem=$(kubectl --context cka-kind -n cms-prod get deployment blog -o jsonpath='{.spec.template.spec.containers[0].resources.requests.memory}')
+
+        if [[ -z "$total_replicas" || -z "$per_pod_cpu" || -z "$per_pod_mem" ]]; then
+          exit 1
+        fi
+
+        python3 - "$total_replicas" "$per_pod_cpu" "$per_pod_mem" <<'PY'
+        from decimal import Decimal
+        import sys
+
+        replicas = int(sys.argv[1])
+        cpu = sys.argv[2]
+        memory = sys.argv[3]
+
+        def cpu_to_millicores(value: str) -> Decimal:
+            if value.endswith("m"):
+                return Decimal(value[:-1])
+            return Decimal(value) * Decimal(1000)
+
+        def memory_to_mib(value: str) -> Decimal:
+            units = {
+                "Ki": Decimal(1) / Decimal(1024),
+                "Mi": Decimal(1),
+                "Gi": Decimal(1024),
+                "Ti": Decimal(1024) * Decimal(1024),
+                "M": Decimal(1000000) / Decimal(1024 * 1024),
+                "G": Decimal(1000000000) / Decimal(1024 * 1024),
+            }
+            for suffix, factor in units.items():
+                if value.endswith(suffix):
+                    return Decimal(value[: -len(suffix)]) * factor
+            return Decimal(value) / Decimal(1024 * 1024)
+
+        total_cpu_m = Decimal(replicas) * cpu_to_millicores(cpu)
+        total_mem_mi = Decimal(replicas) * memory_to_mib(memory)
+
+        if total_cpu_m <= Decimal(100) or total_mem_mi <= Decimal(256):
+            sys.exit(1)
+        PY

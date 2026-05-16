@@ -4,74 +4,17 @@ metadata:
   questionId: cka-q012
 spec:
   targetCluster: cka-kind
-  namespace: tls-demo
+  namespace: backup-inventory
   maxScore: 10
   checks:
-    - id: secret-exists
-      type: kubernetes-object-exists
-      points: 2
-      object:
-        apiVersion: v1
-        kind: Secret
-        name: portal-tls
-    - id: secret-type
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: v1
-        kind: Secret
-        name: portal-tls
-      path: $.type
-      equals: kubernetes.io/tls
-    - id: ingress-exists
-      type: kubernetes-object-exists
-      points: 2
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-    - id: ingress-class
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-      path: $.spec.ingressClassName
-      equals: nginx
-    - id: ingress-host
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-      path: $.spec.rules[0].host
-      equals: portal.demo.local
-    - id: ingress-tls-secret
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-      path: $.spec.tls[0].secretName
-      equals: portal-tls
-    - id: ingress-backend
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-      path: $.spec.rules[0].http.paths[0].backend.service.name
-      equals: secure-svc
-    - id: ingress-backend-port
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: portal-ingress
-      path: $.spec.rules[0].http.paths[0].backend.service.port.number
-      equals: 8443
+    - id: backup-crd-list
+      type: remote-file-line-set
+      points: 10
+      node: cka0002
+      file:
+        path: /home/ubuntu/an.txt
+        lines:
+          - backupplans.backup.platform.example.com
+          - backups.backup.platform.example.com
+          - restores.backup.platform.example.com
+        exact: true

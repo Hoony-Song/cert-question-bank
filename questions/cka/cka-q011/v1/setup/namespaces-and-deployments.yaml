@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: ui
-          image: nginx:1.27
+          image: registry.k8s.io/pause:3.7
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,6 +58,6 @@ spec:
     spec:
       containers:
         - name: api
-          image: nginx:1.27
+          image: registry.k8s.io/pause:3.7
           ports:
             - containerPort: 8443

@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-kind
 title: Expose a pre-created nginx Pod
-status: active
+status: deprecated
 category: workloads-and-scheduling
 difficulty: easy
 points: 10

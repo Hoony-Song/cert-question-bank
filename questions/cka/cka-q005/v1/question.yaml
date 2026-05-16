@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-vm
 title: "Create default StorageClass and PVC"
-status: draft
+status: active
 category: storage
 difficulty: easy
 points: 10

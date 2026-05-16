@@ -1,6 +1,6 @@
 # Task
 
-`ssh cka0001`로 접속한 뒤 `cka-kind` 컨텍스트를 사용하세요.
+현재 노드가 `cka0002`임을 확인하세요. 아니면 `ssh cka0002`로 이동하세요.
 
 `logging-lab` 네임스페이스의 `audit-worker` Deployment는 로그 파일을 생성하지만, 현재 `kubectl logs`로 해당 파일 내용을 확인하기 어렵습니다.
 

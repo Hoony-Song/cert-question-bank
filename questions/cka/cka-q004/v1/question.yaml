@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-kind
 title: "Add a log tailing sidecar to a Deployment"
-status: draft
+status: active
 category: workloads-and-scheduling
 difficulty: medium
 points: 10

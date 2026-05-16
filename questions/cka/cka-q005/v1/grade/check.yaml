@@ -31,7 +31,7 @@ spec:
         kind: StorageClass
         name: fast-local
       path: $.metadata.annotations.storageclass\.kubernetes\.io/is-default-class
-      equals: true
+      equals: "true"
     - id: sc-binding-mode
       type: jsonpath-equals
       points: 1
@@ -43,17 +43,35 @@ spec:
       equals: WaitForFirstConsumer
     - id: pvc-exists
       type: kubernetes-object-exists
-      points: 2
+      points: 1
       object:
         apiVersion: v1
         kind: PersistentVolumeClaim
         name: reports-pvc
     - id: pvc-storageclass
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
         apiVersion: v1
         kind: PersistentVolumeClaim
         name: reports-pvc
       path: $.spec.storageClassName
       equals: fast-local
+    - id: pvc-accessmode
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: reports-pvc
+      path: $.spec.accessModes[0]
+      equals: ReadWriteOnce
+    - id: pvc-storage-request
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        name: reports-pvc
+      path: $.spec.resources.requests.storage
+      equals: 2Gi

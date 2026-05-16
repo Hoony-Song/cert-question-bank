@@ -9,20 +9,38 @@ spec:
   checks:
     - id: configmap-exists
       type: kubernetes-object-exists
-      points: 2
+      points: 1
       object:
         apiVersion: v1
         kind: ConfigMap
         name: edge-tls-config
     - id: configmap-tls-value
       type: jsonpath-equals
-      points: 3
+      points: 2
       object:
         apiVersion: v1
         kind: ConfigMap
         name: edge-tls-config
       path: $.data.ssl_protocols
       equals: TLSv1.3
+    - id: configmap-body-size
+      type: jsonpath-equals
+      points: 2
+      object:
+        apiVersion: v1
+        kind: ConfigMap
+        name: edge-tls-config
+      path: $.data.client_max_body_size
+      equals: 20m
+    - id: configmap-keepalive-timeout
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: v1
+        kind: ConfigMap
+        name: edge-tls-config
+      path: $.data.keepalive_timeout
+      equals: 65
     - id: configmap-immutable
       type: jsonpath-equals
       points: 2
@@ -34,7 +52,7 @@ spec:
       equals: true
     - id: deployment-revision-label
       type: jsonpath-equals
-      points: 3
+      points: 2
       object:
         apiVersion: apps/v1
         kind: Deployment

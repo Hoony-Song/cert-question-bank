@@ -1,6 +1,6 @@
 # Task
 
-`ssh cka0001`로 접속한 뒤 `cka-vm` 컨텍스트를 사용하세요.
+현재 노드가 `cka0001`임을 확인하세요. 아니면 `ssh cka0001`로 이동하세요.
 
 `reporting-data` 네임스페이스에서 사용할 기본 StorageClass와 PVC를 생성하세요.
 

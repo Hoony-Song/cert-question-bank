@@ -16,6 +16,8 @@ immutable: true
 data:
   ssl_protocols: "TLSv1.2 TLSv1.3"
   ssl_ciphers: "HIGH:!aNULL:!MD5"
+  client_max_body_size: "1m"
+  keepalive_timeout: "30"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,7 +40,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:1.27
+          image: registry.k8s.io/pause:3.9
           envFrom:
             - configMapRef:
                 name: edge-tls-config

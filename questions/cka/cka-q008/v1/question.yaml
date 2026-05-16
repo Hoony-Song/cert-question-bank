@@ -2,8 +2,8 @@ id: cka-q008
 version: v1
 examType: CKA
 targetCluster: cka-kind
-title: "Install a GitOps controller workload"
-status: draft
+title: "Install metrics-server with Helm"
+status: active
 category: cluster-architecture
 difficulty: medium
 points: 10
@@ -11,18 +11,18 @@ score: 10
 environment:
   template: cka/cka-3vm.yaml
   context: cka-kind
-  namespace: gitops-system
+  namespace: metrics-server
 ui:
   order: 8
   displayContext: cka-kind
-  displayNamespace: gitops-system
+  displayNamespace: metrics-server
   estimatedMinutes: 12
 question:
   file: problem.md
 setup:
   type: kubernetes-manifest
   files:
-    - setup/argocd-ns.yaml
+    - setup/metrics-server-ns.yaml
 grading:
   type: declarative
   file: grade/check.yaml

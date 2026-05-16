@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-kind
 title: "Scale Deployment and configure resource requests"
-status: draft
+status: active
 category: workloads-and-scheduling
 difficulty: easy
 points: 10

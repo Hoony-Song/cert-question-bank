@@ -3,68 +3,75 @@ kind: GradingCheck
 metadata:
   questionId: cka-q010
 spec:
-  targetCluster: cka-kind
+  targetCluster: cka-vm
   namespace: routing-lab
   maxScore: 10
   checks:
-    - id: ingress-exists
+    - id: httproute-exists
       type: kubernetes-object-exists
       points: 2
       object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-    - id: ingress-class
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+    - id: httproute-parent
       type: jsonpath-equals
       points: 1
       object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-      path: $.spec.ingressClassName
-      equals: nginx
-    - id: ingress-host
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.parentRefs[0].name
+      equals: routing-gateway
+    - id: httproute-host
       type: jsonpath-equals
-      points: 2
+      points: 1
       object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-      path: $.spec.rules[0].host
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.hostnames[0]
       equals: catalog.apps.local
-    - id: ingress-path
+    - id: httproute-path
       type: jsonpath-equals
       points: 1
       object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-      path: $.spec.rules[0].http.paths[0].path
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.rules[0].matches[0].path.value
       equals: /catalog
-    - id: ingress-path-type
+    - id: httproute-path-type
       type: jsonpath-equals
       points: 1
       object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-      path: $.spec.rules[0].http.paths[0].pathType
-      equals: Prefix
-    - id: ingress-backend
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.rules[0].matches[0].path.type
+      equals: PathPrefix
+    - id: httproute-backend
       type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.rules[0].backendRefs[0].name
+      equals: catalog-api
+    - id: httproute-port
+      type: jsonpath-equals
+      points: 1
+      object:
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        name: catalog-route
+      path: $.spec.rules[0].backendRefs[0].port
+      equals: 8080
+    - id: legacy-ingress-absent
+      type: kubernetes-object-absent
       points: 2
       object:
         apiVersion: networking.k8s.io/v1
         kind: Ingress
-        name: catalog-ingress
-      path: $.spec.rules[0].http.paths[0].backend.service.name
-      equals: catalog-api
-    - id: ingress-port
-      type: jsonpath-equals
-      points: 1
-      object:
-        apiVersion: networking.k8s.io/v1
-        kind: Ingress
-        name: catalog-ingress
-      path: $.spec.rules[0].http.paths[0].backend.service.port.number
-      equals: 8080
+        name: legacy-ingress

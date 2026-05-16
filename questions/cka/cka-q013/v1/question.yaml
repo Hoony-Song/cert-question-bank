@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-vm
 title: "Replace immutable ConfigMap and restart Deployment"
-status: draft
+status: active
 category: workloads-and-scheduling
 difficulty: medium
 points: 10

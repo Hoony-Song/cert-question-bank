@@ -26,6 +26,6 @@ spec:
     spec:
       containers:
         - name: wordpress
-          image: wordpress:6.4
+          image: registry.k8s.io/pause:3.7
           ports:
             - containerPort: 80

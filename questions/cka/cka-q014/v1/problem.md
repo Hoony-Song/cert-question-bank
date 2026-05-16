@@ -1,11 +1,14 @@
 # Task
 
-`ssh cka0001`로 접속한 뒤 `cka-vm` 컨텍스트를 사용하세요.
+현재 노드가 `cka0001`임을 확인하세요. 아니면 `ssh cka0001`로 이동하세요.
 
-운영팀이 kubeadm 클러스터의 worker 노드를 네트워크 플러그인 검증 대상으로 분리하려고 합니다.
+클러스터의 기존 CNI가 보안 심사를 통과하지 못해 제거되었습니다.
 
-`worker` 노드에 아래 설정을 적용하세요.
+NetworkPolicy를 적용할 수 있는 새 CNI를 설치해야 합니다.
 
-- label: `networking.cert-platform.io/plugin=calico`
-- taint: `networking.cert-platform.io/validation=required:NoSchedule`
-- 기존 노드 이름과 다른 노드는 수정하지 마세요
+아래 manifest를 사용해 Calico Tigera operator를 설치하세요.
+
+- 설치 URL: `https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/tigera-operator.yaml`
+- `tigera-operator` namespace가 생성되어야 합니다
+- `tigera-operator` Deployment가 생성되어야 합니다
+- Tigera operator CRD가 생성되어야 합니다

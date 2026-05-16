@@ -13,23 +13,23 @@ spec:
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
     - id: hpa-target-name
       type: jsonpath-equals
       points: 2
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
       path: $.spec.scaleTargetRef.name
-      equals: web-frontend
+      equals: web-nginx
     - id: hpa-cpu-target
       type: jsonpath-equals
       points: 2
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
       path: $.spec.metrics[0].resource.target.averageUtilization
       equals: 55
     - id: hpa-min-replicas
@@ -38,7 +38,7 @@ spec:
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
       path: $.spec.minReplicas
       equals: 2
     - id: hpa-max-replicas
@@ -47,7 +47,7 @@ spec:
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
       path: $.spec.maxReplicas
       equals: 5
     - id: hpa-scaledown-window
@@ -56,6 +56,6 @@ spec:
       object:
         apiVersion: autoscaling/v2
         kind: HorizontalPodAutoscaler
-        name: web-frontend-hpa
+        name: web-nginx-hpa
       path: $.spec.behavior.scaleDown.stabilizationWindowSeconds
       equals: 45

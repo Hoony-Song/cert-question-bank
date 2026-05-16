@@ -3,7 +3,7 @@ version: v1
 examType: CKA
 targetCluster: cka-kind
 title: "Create Ingress for existing service"
-status: draft
+status: active
 category: services-and-networking
 difficulty: easy
 points: 10
